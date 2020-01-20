@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.ahgitdevelopment.groupfilmmanager.ui.moviemanger.ui.movies.HomeFragment"
+        android:name="com.ahgitdevelopment.groupfilmmanager.ui.moviemanger.ui.movies.MoviesFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home">
         <action
@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.ahgitdevelopment.groupfilmmanager.ui.moviemanger.ui.favorites.DashboardFragment"
+        android:name="com.ahgitdevelopment.groupfilmmanager.ui.moviemanger.ui.favorites.FavouriteMoviesFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 

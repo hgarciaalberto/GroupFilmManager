@@ -10,19 +10,19 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.ahgitdevelopment.groupfilmmanager.R
 
-class DashboardFragment : Fragment() {
+class FavouriteMoviesFragment : Fragment() {
 
-    private lateinit var dashboardViewModel: DashboardViewModel
+    private lateinit var favouritesMoviesViewModel: FavouritesMoviesViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel::class.java)
+        favouritesMoviesViewModel = ViewModelProviders.of(this).get(FavouritesMoviesViewModel::class.java)
 
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
 
         val textView: TextView = root.findViewById(R.id.text_dashboard)
 
-        dashboardViewModel.text.observe(this, Observer {
+        favouritesMoviesViewModel.text.observe(this, Observer {
             textView.text = it
         })
         return root

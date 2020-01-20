@@ -13,19 +13,19 @@ import androidx.navigation.fragment.findNavController
 import com.ahgitdevelopment.groupfilmmanager.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class HomeFragment : Fragment() {
+class MoviesFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var moviesViewModel: MoviesViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
+        moviesViewModel = ViewModelProviders.of(this).get(MoviesViewModel::class.java)
 
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
         val textView: TextView = root.findViewById(R.id.text_home)
 
-        homeViewModel.text.observe(this, Observer {
+        moviesViewModel.text.observe(this, Observer {
             textView.text = it
         })
         return root
