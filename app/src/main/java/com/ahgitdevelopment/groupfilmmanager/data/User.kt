@@ -1,3 +1,13 @@
 package com.ahgitdevelopment.groupfilmmanager.data
 
-class User(val id: String, val name: String)
+data class User(
+    val name: String = "",
+    val isWatched: Boolean = false,
+    val isWanted: Boolean = false) {
+
+    constructor(user: User) : this(
+        name = user.name,
+        isWatched = user.isWatched,
+        isWanted = user.isWanted)
+
+}

@@ -9,12 +9,23 @@
         android:id="@+id/navigation_home"
         android:name="com.ahgitdevelopment.groupfilmmanager.ui.moviemanger.ui.movies.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_addMovie"
+            app:destination="@id/navigation_addMovie"
+            app:popUpTo="@id/navigation_home" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.ahgitdevelopment.groupfilmmanager.ui.moviemanger.ui.favorites.DashboardFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
+        android:id="@+id/navigation_addMovie"
+        android:name="com.ahgitdevelopment.groupfilmmanager.ui.moviemanger.ui.addmovie.AddMovieFragment"
+        android:label="@string/title_addMovie"
+        tools:layout="@layout/fragment_addmovie" />
 
 </navigation>

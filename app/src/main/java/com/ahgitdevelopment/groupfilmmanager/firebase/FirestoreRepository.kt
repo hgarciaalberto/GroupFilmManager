@@ -1,34 +1,77 @@
 package com.ahgitdevelopment.groupfilmmanager.firebase
 
-import com.google.firebase.firestore.DocumentSnapshot
+import android.util.Log
+import com.ahgitdevelopment.groupfilmmanager.data.Movie
+import com.ahgitdevelopment.groupfilmmanager.data.User
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.tasks.await
+
 
 class FirestoreRepository {
 
+//    private val databaseId by lazy { prefs.getDatabaseId() }
+//    private val userId by lazy { prefs.getUserId() }
+
     private val db = FirebaseFirestore.getInstance()
-    private lateinit var databaseId: String
-    private lateinit var userId: String
 
 
-    fun createDb(): String {
-        databaseId = db.collection(ROOT).document().id
-        return databaseId
+    fun createDb(): String = db.collection(ROOT).document().id
+
+    fun createUser(databaseId: String) =
+        db.collection(ROOT).document(databaseId).collection(USERS).document().id
+
+    /**Map
+     * To know if a database has been created, at least one user has to exist (the creator)
+     * due to movies could not be added.
+     */
+    suspend fun exitDatabaseId(databaseId: String): QuerySnapshot? {
+        return db.collection(ROOT).document(databaseId).collection(USERS).get().await()
     }
 
-    fun createUser(): String {
-        userId = db.collection(ROOT).document(databaseId).collection(USER).document().id
-        return userId
+    suspend fun saveMovie(databaseId: String, movie: Movie) {
+        // Get users
+
+        val users =
+            db.collection(ROOT).document(databaseId).collection(USERS).get().await().toObjects(User::class.java)
+        movie.users.addAll(users)
+
+        db.collection(ROOT).document(databaseId).collection(MOVIES).add(movie).await()
+
     }
 
-    suspend fun exitDatabaseId(databaseId: String): DocumentSnapshot? {
-        return db.collection(ROOT).document(databaseId).get().await()
+    fun saveUserIntoDatabase(databaseId: String, userId: String, userName: String) =
+        db.collection(ROOT).document(databaseId).collection(USERS).document(userId).set(User(userName))
+
+    suspend fun updateMoviesWithNewUser(databaseId: String, userId: String) {
+
+        //Add user to all movies
+        val dbRef = db.collection(ROOT).document(databaseId)
+        val moviesRef = dbRef.collection(MOVIES)
+        val userRef = dbRef.collection(USERS)
+
+        val user = userRef.document(userId).get().await().toObject(User::class.java)
+
+        moviesRef.get().await().forEach {
+            Log.d(TAG, "Movie updated: ${it.id}")
+            moviesRef.document(it.id).update(MOVIE_USER_LIST, FieldValue.arrayUnion(user))
+        }
     }
+
 
     companion object {
-        const val ROOT = "root"
-        const val FILM = "film"
-        const val USER = "user"
+        private const val TAG = "FirestoreRepository"
 
+        // Database tables
+        const val ROOT = "root"
+        const val MOVIES = "movies"
+        const val USERS = "users"
+
+        // User fields
+        const val USER_NAME = "name"
+
+        // Movie fields
+        const val MOVIE_USER_LIST = "users"
     }
 }

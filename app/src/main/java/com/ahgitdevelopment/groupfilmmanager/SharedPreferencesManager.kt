@@ -13,10 +13,14 @@ class SharedPreferencesManager @Inject constructor(context: Context) {
     fun setUserId(userId: String) = prefs.edit().putString(USER_ID, userId).apply()
     fun getUserId(): String = prefs.getString(USER_ID, "") ?: ""
 
+    fun setUserName(userName: String) = prefs.edit().putString(USER_NAME, userName).apply()
+    fun getUserName(): String = prefs.getString(USER_NAME, "") ?: ""
+
     fun clear() = prefs.edit().clear().apply()
 
     companion object {
         const val DATABASE_ID: String = "database_id"
         const val USER_ID: String = "user_id"
+        const val USER_NAME: String = "user_name"
     }
 }

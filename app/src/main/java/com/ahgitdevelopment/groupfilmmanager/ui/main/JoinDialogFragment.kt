@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.ahgitdevelopment.groupfilmmanager.R
 
@@ -22,31 +24,52 @@ class JoinDialogFragment : DialogFragment() {
 
         val view = inflater.inflate(R.layout.input_text, container, false)
 
-
-        val databaseId = view.findViewById<EditText>(R.id.dialogDatabaseIdText)
-
-        view.findViewById<Button>(R.id.btnJoin).setOnClickListener {
-            dismiss()
-            listener.onJoinClickListener(databaseId.text.toString())
+        view.findViewById<TextView>(R.id.title).apply {
+            text = arguments?.getString(TITLE, "") ?: ""
         }
 
-        view.findViewById<Button>(R.id.btnCancel).setOnClickListener {
-            dismiss()
+        val text = view.findViewById<EditText>(R.id.text)
+
+        view.findViewById<Button>(R.id.btnJoin).setOnClickListener {
+            if (text.text.isNotBlank()) {
+                dismiss()
+                when (listener) {
+                    is OnJoinClickListener ->
+                        (listener as OnJoinClickListener).onJoinClickListener(text.text.toString())
+
+                    is OnAddNameClickListener ->
+                        (listener as OnAddNameClickListener).onAddNameClickListener(text.text.toString())
+                }
+
+            } else {
+                Toast.makeText(requireActivity(), R.string.error_message_empty_value, Toast.LENGTH_LONG).show()
+            }
         }
 
         return view
     }
 
-    interface OnJoinClickListener {
+    interface MyListener
+
+    interface OnJoinClickListener : MyListener {
         fun onJoinClickListener(databaseId: String)
     }
 
-    companion object {
-        private lateinit var listener: OnJoinClickListener
+    interface OnAddNameClickListener : MyListener {
+        fun onAddNameClickListener(name: String)
+    }
 
-        fun newInstance(listener: OnJoinClickListener): JoinDialogFragment? {
+    companion object {
+        private const val TITLE = "title"
+        private lateinit var listener: MyListener
+
+        fun newInstance(listener: MyListener, title: String): JoinDialogFragment? {
             Companion.listener = listener
-            return JoinDialogFragment()
+            return JoinDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putString(TITLE, title)
+                }
+            }
         }
     }
 }
