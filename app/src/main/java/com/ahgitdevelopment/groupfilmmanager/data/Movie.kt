@@ -1,12 +1,11 @@
 package com.ahgitdevelopment.groupfilmmanager.data
 
-import java.io.Serializable
-
 data class Movie(
     var name: String = "",
     var description1: String = "",
     var description2: String = "",
-    var users: ArrayList<User> = ArrayList()) : Serializable {
+    var users: ArrayList<User> = ArrayList()) {
+
 
     fun getUserNames(): ArrayList<String> {
         val userNames = ArrayList<String>()

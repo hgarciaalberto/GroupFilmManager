@@ -45,7 +45,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     }
 
     suspend fun existDatabaseId(databaseId: String): QuerySnapshot? {
-        return firestoreRepository.exitDatabaseId(databaseId)
+        return firestoreRepository.existDatabaseId(databaseId)
     }
 
     suspend fun updateMoviesWithNewUser(databaseId: String, userId: String) {

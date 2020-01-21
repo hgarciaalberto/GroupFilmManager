@@ -46,7 +46,9 @@ class MoviesFragment : Fragment() {
                     .setQuery(it.query, Movie::class.java)
                     .build()
 
-                mAdapter = MovieRecyclerAdapter(options)
+                mAdapter = MovieRecyclerAdapter(options).apply {
+                    setHasStableIds(true)
+                }
 
                 view.findViewById<RecyclerView>(R.id.recyclerView).apply {
                     setHasFixedSize(true)

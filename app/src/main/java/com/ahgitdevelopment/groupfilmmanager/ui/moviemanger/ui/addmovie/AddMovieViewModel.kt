@@ -24,7 +24,9 @@ class AddMovieViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
 
             if (!name.value.isNullOrBlank()) {
-                Movie(name.value ?: "", description1.value ?: "", description2.value ?: "").run {
+                Movie(name.value?.trim() ?: "",
+                    description1.value?.trim() ?: "",
+                    description2.value?.trim() ?: "").run {
                     val databaseId = getApplication<BaseApplication>().prefs.getDatabaseId()
                     firestoreRepository.saveMovie(databaseId, this) //FIXME: Do not have error management
                     isMovieSaved.value = true

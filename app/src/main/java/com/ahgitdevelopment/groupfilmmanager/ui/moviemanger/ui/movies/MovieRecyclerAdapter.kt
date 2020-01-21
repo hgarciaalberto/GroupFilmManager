@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.ahgitdevelopment.groupfilmmanager.R
 import com.ahgitdevelopment.groupfilmmanager.data.Movie
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
@@ -24,6 +25,11 @@ class MovieRecyclerAdapter(options: FirestoreRecyclerOptions<Movie>) :
         holder.bind(model)
     }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+
     class ViewHolder(itemView: View, private val context: Context) : RecyclerView.ViewHolder(itemView) {
         private val title = itemView.findViewById(R.id.title) as TextView
         private val info1 = itemView.findViewById(R.id.info1) as TextView
@@ -35,9 +41,17 @@ class MovieRecyclerAdapter(options: FirestoreRecyclerOptions<Movie>) :
             info1.text = movie.description1
             info2.text = movie.description2
 
-            val myAdapter = UserRecyclerAdapter(movie.users)
+            info1.visibility = if (info1.text.isNotBlank()) View.VISIBLE else View.GONE
+            info2.visibility = if (info2.text.isNotBlank()) View.VISIBLE else View.GONE
+
+            movie.users.sort()
+            val myAdapter = UserRecyclerAdapter(movie).apply {
+                setHasStableIds(true)
+            }
+
 
             recyclerView.apply {
+                (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
                 setHasFixedSize(true)
                 layoutManager = GridLayoutManager(context, 3)
                 adapter = myAdapter

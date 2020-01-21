@@ -1,13 +1,12 @@
 package com.ahgitdevelopment.groupfilmmanager.data
 
+import java.util.*
+
 data class User(
-    val name: String = "",
-    val isWatched: Boolean = false,
-    val isWanted: Boolean = false) {
+    var name: String = "",
+    var isWatched: Boolean = false,
+    var isWanted: Boolean = false) : Comparable<User> {
 
-    constructor(user: User) : this(
-        name = user.name,
-        isWatched = user.isWatched,
-        isWanted = user.isWanted)
-
+    override fun compareTo(other: User): Int =
+        if (this.name.toLowerCase(Locale.getDefault()) > other.name.toLowerCase(Locale.getDefault())) 1 else -1
 }
