@@ -20,45 +20,11 @@ class AddMovieViewModel(application: Application) : AndroidViewModel(application
 
     val isMovieSaved = SingleLiveEvent<Boolean>()
 
-//    @Bindable
-//    fun getName(): String {
-//        data.name
-//    }
-//
-//    fun setName(value: String) {
-//        // Avoids infinite loops.
-//        if (data.name != value) {
-//            data.name = value
-//
-//            // React to the change.
-//            saveData()
-//
-//            // Notify observers of a new value.
-//            notifyPropertyChanged(BR.name)
-//        }
-//    }
-//
-//    @Bindable
-//    fun getDesctiption1(): String = description1
-//
-//    fun setDesctiption1(description1: String) {
-//        this.description1 = description1
-//    }
-//
-//    @Bindable
-//    fun getDesctiption2(): String = description2
-//
-//    fun setDesctiption2(description2: String) {
-//        this.description2 = description2
-//    }
-
     fun saveMovieIntoDatabase() {
         viewModelScope.launch {
-            //            if (name.isNotBlank() && description1.isNotBlank() && description2.isNotBlank()) {
-            if (!name.value.isNullOrBlank() && !description1.value.isNullOrBlank() && !description2.value.isNullOrBlank()) {
-//                Movie(name, description1, description2).run {
+
+            if (!name.value.isNullOrBlank()) {
                 Movie(name.value ?: "", description1.value ?: "", description2.value ?: "").run {
-                    //                    val databaseId = (application as BaseApplication).prefs.getDatabaseId()
                     val databaseId = getApplication<BaseApplication>().prefs.getDatabaseId()
                     firestoreRepository.saveMovie(databaseId, this) //FIXME: Do not have error management
                     isMovieSaved.value = true

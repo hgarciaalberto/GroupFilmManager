@@ -1,6 +1,5 @@
 package com.ahgitdevelopment.groupfilmmanager.firebase
 
-import android.util.Log
 import com.ahgitdevelopment.groupfilmmanager.data.Movie
 import com.ahgitdevelopment.groupfilmmanager.data.User
 import com.google.firebase.firestore.FieldValue
@@ -54,10 +53,12 @@ class FirestoreRepository {
         val user = userRef.document(userId).get().await().toObject(User::class.java)
 
         moviesRef.get().await().forEach {
-            Log.d(TAG, "Movie updated: ${it.id}")
-            moviesRef.document(it.id).update(MOVIE_USER_LIST, FieldValue.arrayUnion(user))
+            moviesRef.document(it.id).update(MOVIE_USERS_LIST, FieldValue.arrayUnion(user))
         }
     }
+
+    suspend fun getAllMovies(databaseId: String): QuerySnapshot =
+        db.collection(ROOT).document(databaseId).collection(MOVIES).orderBy(USER_NAME).get().await()
 
 
     companion object {
@@ -72,6 +73,6 @@ class FirestoreRepository {
         const val USER_NAME = "name"
 
         // Movie fields
-        const val MOVIE_USER_LIST = "users"
+        const val MOVIE_USERS_LIST = "users"
     }
 }

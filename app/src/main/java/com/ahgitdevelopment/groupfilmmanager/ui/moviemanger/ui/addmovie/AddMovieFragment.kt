@@ -45,13 +45,8 @@ class AddMovieFragment : Fragment() {
 
         addMovieViewModel.isMovieSaved.observe(this, Observer {
             when (it) {
-                true -> {
-                    Toast.makeText(requireContext(), "movie saved: $it", Toast.LENGTH_LONG).show()
-                    findNavController().popBackStack()
-                }
-                false -> {
-                    Toast.makeText(requireContext(), R.string.error_message_empty_value, Toast.LENGTH_LONG).show()
-                }
+                true -> findNavController().popBackStack()
+                false -> Toast.makeText(requireContext(), R.string.error_message_empty_value, Toast.LENGTH_LONG).show()
             }
         })
     }

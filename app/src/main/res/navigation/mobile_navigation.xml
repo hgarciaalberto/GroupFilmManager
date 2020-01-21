@@ -9,7 +9,7 @@
         android:id="@+id/navigation_home"
         android:name="com.ahgitdevelopment.groupfilmmanager.ui.moviemanger.ui.movies.MoviesFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home">
+        tools:layout="@layout/fragment_movies">
         <action
             android:id="@+id/action_navigation_home_to_navigation_addMovie"
             app:destination="@id/navigation_addMovie"

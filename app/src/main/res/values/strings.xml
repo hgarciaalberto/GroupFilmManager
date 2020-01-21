@@ -17,4 +17,7 @@
     <string name="title_addMovie">Add movie</string>
     <string name="dialog_title_insertUserName">Insert your name</string>
     <string name="error_message_addMovie">Check fileds to continue.</string>
+    <string name="user_movieWatched">Watched</string>
+    <string name="user_movieWanted">Wanted</string>
+    <string name="users_info">Users</string>
 </resources>
