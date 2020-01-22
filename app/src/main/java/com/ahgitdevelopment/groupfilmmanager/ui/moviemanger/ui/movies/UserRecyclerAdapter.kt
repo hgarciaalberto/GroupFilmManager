@@ -39,7 +39,7 @@ class UserRecyclerAdapter(private val movieId: String, private val users: List<U
     class ViewHolder(itemView: View, private val context: Context, private val movieId: String) :
         RecyclerView.ViewHolder(itemView) {
 
-        private val firestoreRepository by lazy { FirestoreRepository() }
+        private val firestoreRepository by lazy { FirestoreRepository(context.applicationContext as BaseApplication) }
 
         private val name = itemView.findViewById(R.id.name) as TextView
         private val watched = itemView.findViewById(R.id.watched) as CheckBox
@@ -54,24 +54,19 @@ class UserRecyclerAdapter(private val movieId: String, private val users: List<U
 
             watched.setOnCheckedChangeListener { _, isChecked ->
 
-                val databaseId = (context.applicationContext as BaseApplication).prefs.getDatabaseId()
-
                 val uiScope = CoroutineScope(Dispatchers.Main)
                 uiScope.launch {
                     user.isWatched = isChecked
-                    firestoreRepository.setWatchedMovie(databaseId, movieId, user)
+                    firestoreRepository.setWatchedMovie(movieId, user)
                 }
             }
 
             wanted.setOnCheckedChangeListener { _, isChecked ->
 
-                // Get movieId
-                val databaseId = (context.applicationContext as BaseApplication).prefs.getDatabaseId()
-
                 val uiScope = CoroutineScope(Dispatchers.Main)
                 uiScope.launch {
                     user.isWanted = isChecked
-                    firestoreRepository.setWantedMovie(databaseId, movieId, user)
+                    firestoreRepository.setWantedMovie(movieId, user)
                 }
             }
         }

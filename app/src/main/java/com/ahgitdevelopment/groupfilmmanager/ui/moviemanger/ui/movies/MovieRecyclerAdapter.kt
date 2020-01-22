@@ -42,7 +42,7 @@ class MovieRecyclerAdapter(options: FirestoreRecyclerOptions<Movie>) :
         private val info2 = itemView.findViewById(R.id.info2) as TextView
         private val recyclerView = itemView.findViewById(R.id.recyclerView) as RecyclerView
 
-        private val firestoreRepository by lazy { FirestoreRepository() }
+        private val firestoreRepository by lazy { FirestoreRepository(context.applicationContext as BaseApplication) }
 
         fun bind(movie: Movie) {
             title.text = movie.name
@@ -68,11 +68,8 @@ class MovieRecyclerAdapter(options: FirestoreRecyclerOptions<Movie>) :
             val uiScope = CoroutineScope(Dispatchers.Main)
             uiScope.launch {
 
-                // Get movieId
-                val databaseId = (context.applicationContext as BaseApplication).prefs.getDatabaseId()
-
                 val users =
-                    firestoreRepository.getAllUsersInMovie(databaseId, movie.id).toObjects(User::class.java).toList()
+                    firestoreRepository.getAllUsersInMovie(movie.id).toObjects(User::class.java).toList()
 
                 val myAdapter = UserRecyclerAdapter(movie.id, users).apply {
                     setHasStableIds(true)

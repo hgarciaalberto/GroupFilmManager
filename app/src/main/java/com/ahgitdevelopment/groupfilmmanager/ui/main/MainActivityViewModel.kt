@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val firestoreRepository by lazy { FirestoreRepository() }
+    private val firestoreRepository by lazy { FirestoreRepository(application as BaseApplication) }
 
     val createDbAction = SingleLiveEvent<Boolean>()
     val joinDbAction = SingleLiveEvent<Boolean>()
@@ -22,23 +22,23 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         viewModelScope.launch {
             firestoreRepository.createDb().let { databaseId ->
                 setPrefsDatabaseId(databaseId)
-                setPrefsUserId(getUserId(databaseId))
+                setPrefsUserId(getUserId())
             }
 
             createDbAction.value = true
         }
     }
 
-    fun getUserId(databaseId: String): String {
+    fun getUserId(): String {
         return if (getPrefsUserId().isBlank())
-            firestoreRepository.createUser(databaseId)
+            firestoreRepository.createUser()
         else
             getPrefsUserId()
     }
 
     fun saveUserIntoDatabase() {
         viewModelScope.launch {
-            firestoreRepository.saveUserIntoDatabase(getPrefsDatabaseId(), getPrefsUserId(), getPrefsUserName())
+            firestoreRepository.saveUserIntoDatabase()
         }
     }
 
@@ -50,8 +50,8 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         return firestoreRepository.existDatabaseId(databaseId)
     }
 
-    suspend fun updateMoviesWithNewUser(databaseId: String, userId: String) {
-        firestoreRepository.updateMoviesWithNewUser(databaseId, userId)
+    suspend fun updateMoviesWithNewUser() {
+        firestoreRepository.updateMoviesWithNewUser()
     }
 
 

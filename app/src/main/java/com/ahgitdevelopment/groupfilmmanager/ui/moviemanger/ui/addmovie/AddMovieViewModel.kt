@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class AddMovieViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val firestoreRepository by lazy { FirestoreRepository() }
+    private val firestoreRepository by lazy { FirestoreRepository(application as BaseApplication) }
 
     var movieName = MutableLiveData<String>()
     var movieDescription1 = MutableLiveData<String>()
@@ -29,8 +29,7 @@ class AddMovieViewModel(application: Application) : AndroidViewModel(application
                     this.description1 = movieDescription1.value?.trim() ?: ""
                     this.description2 = movieDescription2.value?.trim() ?: ""
                 }.run {
-                    val databaseId = getApplication<BaseApplication>().prefs.getDatabaseId()
-                    firestoreRepository.saveMovie(databaseId, this) //FIXME: Do not have error management
+                    firestoreRepository.saveMovie(this)
                     isMovieSaved.value = true
                 }
             } else {

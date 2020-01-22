@@ -25,8 +25,7 @@ class MoviesFragment : Fragment() {
 
     private lateinit var moviesViewModel: MoviesViewModel
 
-    private val firestoreRepository by lazy { FirestoreRepository() }
-
+    private val firestoreRepository by lazy { FirestoreRepository(activity?.applicationContext as BaseApplication) }
 
     private lateinit var mAdapter: MovieRecyclerAdapter
 
@@ -45,13 +44,12 @@ class MoviesFragment : Fragment() {
 
         val uiScope = CoroutineScope(Dispatchers.Main)
         uiScope.launch {
-            val databaseId = (activity?.application as BaseApplication).prefs.getDatabaseId()
 
             when (arguments?.getBoolean(IS_FAVOURITE_FRAGMENT)) {
-                true -> firestoreRepository.getAllFavouritesMovies(databaseId)
-                else -> firestoreRepository.getAllMovies(databaseId)
+                true -> firestoreRepository.getAllFavouritesMovies()
+                else -> firestoreRepository.getAllMovies()
             }?.let {
-                
+
                 val options = FirestoreRecyclerOptions.Builder<Movie>()
                     .setLifecycleOwner(activity)
                     .setQuery(it.query, Movie::class.java)

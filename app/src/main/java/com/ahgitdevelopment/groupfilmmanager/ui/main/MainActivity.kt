@@ -97,10 +97,10 @@ class MainActivity : BaseActivity() {
                 viewModel.existDatabaseId(databaseId).let {
                     if (it?.documents?.size != null && it.documents.size >= 0) {
                         viewModel.setPrefsDatabaseId(databaseId)
-                        val userId = viewModel.getUserId(databaseId)
+                        val userId = viewModel.getUserId()
                         viewModel.setPrefsUserId(userId)
                         viewModel.saveUserIntoDatabase()
-                        viewModel.updateMoviesWithNewUser(databaseId, userId)
+                        viewModel.updateMoviesWithNewUser()
                         launchActivity()
                     } else {
                         Toast.makeText(this@MainActivity, R.string.join_again_error_message, Toast.LENGTH_LONG)
