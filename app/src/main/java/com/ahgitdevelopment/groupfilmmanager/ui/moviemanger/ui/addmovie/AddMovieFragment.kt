@@ -39,10 +39,6 @@ class AddMovieFragment : Fragment() {
             addMovieViewModel.saveMovieIntoDatabase()
         }
 
-        view.findViewById<FloatingActionButton>(R.id.fabCancelMovie).setOnClickListener {
-            findNavController().popBackStack()
-        }
-
         addMovieViewModel.isMovieSaved.observe(this, Observer {
             when (it) {
                 true -> findNavController().popBackStack()

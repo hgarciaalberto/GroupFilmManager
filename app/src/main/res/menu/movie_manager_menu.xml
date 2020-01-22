@@ -1,20 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menuSettings"
-        android:title="@string/settings" />
+        android:id="@+id/menuSearch"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="@android:string/search_go"
+        app:showAsAction="always" />
 
     <item
-        android:id="@+id/importFile"
-        android:title="@string/import_file" />
+        android:id="@+id/menuImportFile"
+        android:icon="@drawable/ic_file_import_black_24dp"
+        android:title="@string/import_file"
+        app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/exportFile"
+        android:id="@+id/menuExportFile"
+        android:icon="@drawable/ic_file_export_black_24dp"
         android:title="@string/export_file" />
 
     <item
-        android:id="@+id/menuSignout"
+        android:id="@+id/menuSettings"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="@string/settings" />
+
+    <item
+        android:id="@+id/menuSignOut"
+        android:icon="@drawable/ic_exit_to_app_black_24dp"
         android:title="@string/sign_out" />
 
 </menu>

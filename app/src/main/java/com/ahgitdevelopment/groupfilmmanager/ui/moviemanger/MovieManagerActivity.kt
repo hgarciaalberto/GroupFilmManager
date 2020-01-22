@@ -42,23 +42,30 @@ class MovieManagerActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
+            R.id.menuSearch -> {
+                Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show()
+                prefs.clear()
+                launchMainActivity()
+            }
+
+            R.id.menuImportFile -> {
+                Toast.makeText(this, "Import File", Toast.LENGTH_SHORT).show()
+            }
+
+            R.id.menuExportFile -> {
+                Toast.makeText(this, "Export File", Toast.LENGTH_SHORT).show()
+            }
+
             R.id.menuSettings -> {
                 Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
             }
 
-            R.id.importFile -> {
-                Toast.makeText(this, "Import File", Toast.LENGTH_SHORT).show()
-            }
-
-            R.id.exportFile -> {
-                Toast.makeText(this, "Export File", Toast.LENGTH_SHORT).show()
-            }
-
-            R.id.menuSignout -> {
+            R.id.menuSignOut -> {
                 Toast.makeText(this, "Sign out", Toast.LENGTH_SHORT).show()
                 prefs.clear()
                 launchMainActivity()
             }
+
 
         }
         return super.onOptionsItemSelected(item)
