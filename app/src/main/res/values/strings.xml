@@ -7,8 +7,8 @@
     <string name="error_message">There is an error</string>
     <string name="error_message_empty_value">Value cannot be empty</string>
     <string name="title_activity_movie_manager">Movie Manager Activity</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_movies">Movies</string>
+    <string name="title_favourites">Wanted</string>
     <string name="title_notifications">Notifications</string>
     <string name="sign_out">Sign out</string>
     <string name="settings">Settings</string>
@@ -16,8 +16,11 @@
     <string name="export_file">Export file</string>
     <string name="title_addMovie">Add movie</string>
     <string name="dialog_title_insertUserName">Insert your name</string>
-    <string name="error_message_addMovie">Check fileds to continue.</string>
+    <string name="error_message_addMovie">Check fields to continue.</string>
     <string name="user_movieWatched">Watched</string>
     <string name="user_movieWanted">Wanted</string>
     <string name="users_info">Users</string>
+    <string name="movie_name">Movie name</string>
+    <string name="additional_information_1">Additional information 1</string>
+    <string name="additional_information_2">Additional information 2</string>
 </resources>

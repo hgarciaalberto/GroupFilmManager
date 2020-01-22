@@ -9,9 +9,15 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.ahgitdevelopment.groupfilmmanager.R
+import com.ahgitdevelopment.groupfilmmanager.base.BaseApplication
 import com.ahgitdevelopment.groupfilmmanager.data.Movie
+import com.ahgitdevelopment.groupfilmmanager.data.User
+import com.ahgitdevelopment.groupfilmmanager.firebase.FirestoreRepository
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MovieRecyclerAdapter(options: FirestoreRecyclerOptions<Movie>) :
     FirestoreRecyclerAdapter<Movie, MovieRecyclerAdapter.ViewHolder>(options) {
@@ -36,6 +42,8 @@ class MovieRecyclerAdapter(options: FirestoreRecyclerOptions<Movie>) :
         private val info2 = itemView.findViewById(R.id.info2) as TextView
         private val recyclerView = itemView.findViewById(R.id.recyclerView) as RecyclerView
 
+        private val firestoreRepository by lazy { FirestoreRepository() }
+
         fun bind(movie: Movie) {
             title.text = movie.name
             info1.text = movie.description1
@@ -44,17 +52,38 @@ class MovieRecyclerAdapter(options: FirestoreRecyclerOptions<Movie>) :
             info1.visibility = if (info1.text.isNotBlank()) View.VISIBLE else View.GONE
             info2.visibility = if (info2.text.isNotBlank()) View.VISIBLE else View.GONE
 
-            movie.users.sort()
-            val myAdapter = UserRecyclerAdapter(movie).apply {
-                setHasStableIds(true)
+            recyclerView.visibility = View.GONE
+
+            itemView.setOnClickListener {
+                recyclerView.visibility = if (recyclerView.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+
+                if (recyclerView.visibility == View.VISIBLE) {
+                    setUserRecycler(movie)
+                }
             }
+        }
 
+        private fun setUserRecycler(movie: Movie) {
 
-            recyclerView.apply {
-                (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-                setHasFixedSize(true)
-                layoutManager = GridLayoutManager(context, 3)
-                adapter = myAdapter
+            val uiScope = CoroutineScope(Dispatchers.Main)
+            uiScope.launch {
+
+                // Get movieId
+                val databaseId = (context.applicationContext as BaseApplication).prefs.getDatabaseId()
+
+                val users =
+                    firestoreRepository.getAllUsersInMovie(databaseId, movie.id).toObjects(User::class.java).toList()
+
+                val myAdapter = UserRecyclerAdapter(movie.id, users).apply {
+                    setHasStableIds(true)
+                }
+
+                recyclerView.apply {
+                    (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+                    setHasFixedSize(true)
+                    layoutManager = GridLayoutManager(context, 2)
+                    adapter = myAdapter
+                }
             }
         }
     }

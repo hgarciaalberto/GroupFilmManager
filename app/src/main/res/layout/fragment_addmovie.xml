@@ -30,8 +30,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Movie name"
-                android:text="@={viewModel.name}" />
+                android:hint="@string/movie_name"
+                android:text="@={viewModel.movieName}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -49,8 +49,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Additional information 1"
-                android:text="@={viewModel.description1}" />
+                android:hint="@string/additional_information_1"
+                android:text="@={viewModel.movieDescription1}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -68,8 +68,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Additional information 2"
-                android:text="@={viewModel.description2}" />
+                android:hint="@string/additional_information_2"
+                android:text="@={viewModel.movieDescription2}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

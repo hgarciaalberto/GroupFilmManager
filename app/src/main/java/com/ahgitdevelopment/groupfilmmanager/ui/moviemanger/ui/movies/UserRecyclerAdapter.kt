@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ahgitdevelopment.groupfilmmanager.R
 import com.ahgitdevelopment.groupfilmmanager.base.BaseApplication
-import com.ahgitdevelopment.groupfilmmanager.data.Movie
 import com.ahgitdevelopment.groupfilmmanager.data.User
 import com.ahgitdevelopment.groupfilmmanager.firebase.FirestoreRepository
 import kotlinx.coroutines.CoroutineScope
@@ -17,26 +16,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class UserRecyclerAdapter(private val movie: Movie) : RecyclerView.Adapter<UserRecyclerAdapter.ViewHolder>() {
+class UserRecyclerAdapter(private val movieId: String, private val users: List<User>) :
+    RecyclerView.Adapter<UserRecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.user_item_checked, parent, false)
-        return ViewHolder(view, parent.context, movie)
+        return ViewHolder(view, parent.context, movieId)
     }
 
     override fun getItemCount(): Int {
-        return movie.users.size
+        return users.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(movie.users[position])
+        holder.bind(users[position])
     }
 
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
 
-    class ViewHolder(itemView: View, private val context: Context, private val movie: Movie) :
+    class ViewHolder(itemView: View, private val context: Context, private val movieId: String) :
         RecyclerView.ViewHolder(itemView) {
 
         private val firestoreRepository by lazy { FirestoreRepository() }
@@ -54,19 +54,12 @@ class UserRecyclerAdapter(private val movie: Movie) : RecyclerView.Adapter<UserR
 
             watched.setOnCheckedChangeListener { _, isChecked ->
 
-                // Get movieId
                 val databaseId = (context.applicationContext as BaseApplication).prefs.getDatabaseId()
 
                 val uiScope = CoroutineScope(Dispatchers.Main)
                 uiScope.launch {
-                    movie.name.let { movieName ->
-                        firestoreRepository.getDatabaseIdByName(databaseId, movieName).let { movieId ->
-                            if (movieId.isNotBlank()) {
-                                user.isWatched = isChecked
-                                firestoreRepository.setWatchedMovie(databaseId, movieId, user)
-                            }
-                        }
-                    }
+                    user.isWatched = isChecked
+                    firestoreRepository.setWatchedMovie(databaseId, movieId, user)
                 }
             }
 
@@ -77,14 +70,8 @@ class UserRecyclerAdapter(private val movie: Movie) : RecyclerView.Adapter<UserR
 
                 val uiScope = CoroutineScope(Dispatchers.Main)
                 uiScope.launch {
-                    movie.name.let { movieName ->
-                        firestoreRepository.getDatabaseIdByName(databaseId, movieName).let { movieId ->
-                            if (movieId.isNotBlank()) {
-                                user.isWanted = isChecked
-                                firestoreRepository.setWantedMovie(databaseId, movieId, user)
-                            }
-                        }
-                    }
+                    user.isWanted = isChecked
+                    firestoreRepository.setWantedMovie(databaseId, movieId, user)
                 }
             }
         }

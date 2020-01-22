@@ -14,19 +14,21 @@ class AddMovieViewModel(application: Application) : AndroidViewModel(application
 
     private val firestoreRepository by lazy { FirestoreRepository() }
 
-    var name = MutableLiveData<String>()
-    var description1 = MutableLiveData<String>()
-    var description2 = MutableLiveData<String>()
+    var movieName = MutableLiveData<String>()
+    var movieDescription1 = MutableLiveData<String>()
+    var movieDescription2 = MutableLiveData<String>()
 
     val isMovieSaved = SingleLiveEvent<Boolean>()
 
     fun saveMovieIntoDatabase() {
         viewModelScope.launch {
 
-            if (!name.value.isNullOrBlank()) {
-                Movie(name.value?.trim() ?: "",
-                    description1.value?.trim() ?: "",
-                    description2.value?.trim() ?: "").run {
+            if (!movieName.value.isNullOrBlank()) {
+                Movie().apply {
+                    this.name = movieName.value?.trim() ?: ""
+                    this.description1 = movieDescription1.value?.trim() ?: ""
+                    this.description2 = movieDescription2.value?.trim() ?: ""
+                }.run {
                     val databaseId = getApplication<BaseApplication>().prefs.getDatabaseId()
                     firestoreRepository.saveMovie(databaseId, this) //FIXME: Do not have error management
                     isMovieSaved.value = true

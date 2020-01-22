@@ -11,7 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.main.MainActivity">
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -22,7 +24,8 @@
 
         <activity
             android:name=".ui.moviemanger.MovieManagerActivity"
-            android:label="@string/title_activity_movie_manager" />
+            android:label="@string/title_activity_movie_manager"
+            android:screenOrientation="portrait" />
 
     </application>
 

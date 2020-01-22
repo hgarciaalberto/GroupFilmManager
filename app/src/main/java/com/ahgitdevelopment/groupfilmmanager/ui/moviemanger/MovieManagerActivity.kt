@@ -29,7 +29,7 @@ class MovieManagerActivity : BaseActivity() {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(setOf(
-            R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_addMovie))
+            R.id.navigation_movies, R.id.navigation_favorites, R.id.navigation_addMovie))
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)

@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.ahgitdevelopment.groupfilmmanager.R
 import com.ahgitdevelopment.groupfilmmanager.base.BaseApplication
 import com.ahgitdevelopment.groupfilmmanager.data.Movie
@@ -37,10 +38,20 @@ class MoviesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        when (arguments?.getBoolean(IS_FAVOURITE_FRAGMENT)) {
+            true -> view.findViewById<FloatingActionButton>(R.id.fab).visibility = View.GONE
+            else -> view.findViewById<FloatingActionButton>(R.id.fab).visibility = View.VISIBLE
+        }
+
         val uiScope = CoroutineScope(Dispatchers.Main)
         uiScope.launch {
             val databaseId = (activity?.application as BaseApplication).prefs.getDatabaseId()
-            firestoreRepository.getAllMovies(databaseId).let {
+
+            when (arguments?.getBoolean(IS_FAVOURITE_FRAGMENT)) {
+                true -> firestoreRepository.getAllFavouritesMovies(databaseId)
+                else -> firestoreRepository.getAllMovies(databaseId)
+            }?.let {
+                
                 val options = FirestoreRecyclerOptions.Builder<Movie>()
                     .setLifecycleOwner(activity)
                     .setQuery(it.query, Movie::class.java)
@@ -51,6 +62,7 @@ class MoviesFragment : Fragment() {
                 }
 
                 view.findViewById<RecyclerView>(R.id.recyclerView).apply {
+                    (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
                     setHasFixedSize(true)
                     layoutManager = LinearLayoutManager(activity)
                     adapter = mAdapter
@@ -62,5 +74,9 @@ class MoviesFragment : Fragment() {
             Toast.makeText(requireActivity(), "Movie added", Toast.LENGTH_SHORT).show()
             findNavController().navigate(R.id.navigation_addMovie)
         }
+    }
+
+    companion object {
+        private const val IS_FAVOURITE_FRAGMENT = "isFavourite"
     }
 }

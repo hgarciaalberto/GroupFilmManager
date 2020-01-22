@@ -18,7 +18,7 @@ class FavouriteMoviesFragment : Fragment() {
 
         favouritesMoviesViewModel = ViewModelProviders.of(this).get(FavouritesMoviesViewModel::class.java)
 
-        val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
+        val root = inflater.inflate(R.layout.fragment_favourites, container, false)
 
         val textView: TextView = root.findViewById(R.id.text_dashboard)
 

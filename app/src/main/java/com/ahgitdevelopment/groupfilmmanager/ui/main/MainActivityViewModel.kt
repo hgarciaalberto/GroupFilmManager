@@ -37,7 +37,9 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun saveUserIntoDatabase() {
-        firestoreRepository.saveUserIntoDatabase(getPrefsDatabaseId(), getPrefsUserId(), getPrefsUserName())
+        viewModelScope.launch {
+            firestoreRepository.saveUserIntoDatabase(getPrefsDatabaseId(), getPrefsUserId(), getPrefsUserName())
+        }
     }
 
     fun joinDb() {
