@@ -42,11 +42,6 @@ class MovieManagerActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.menuSearch -> {
-                Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show()
-                prefs.clear()
-                launchMainActivity()
-            }
 
             R.id.menuImportFile -> {
                 Toast.makeText(this, "Import File", Toast.LENGTH_SHORT).show()
@@ -65,8 +60,6 @@ class MovieManagerActivity : BaseActivity() {
                 prefs.clear()
                 launchMainActivity()
             }
-
-
         }
         return super.onOptionsItemSelected(item)
     }

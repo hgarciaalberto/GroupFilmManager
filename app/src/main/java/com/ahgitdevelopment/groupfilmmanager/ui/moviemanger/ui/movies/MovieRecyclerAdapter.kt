@@ -27,16 +27,18 @@ class MovieRecyclerAdapter(options: FirestoreRecyclerOptions<Movie>) :
         return ViewHolder(view, parent.context)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, postion: Int, model: Movie) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, model: Movie) {
+        holder.itemView.tag = model.id
         holder.bind(model)
     }
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
+    override fun getItemId(position: Int): Long = position.toLong()
 
 
     class ViewHolder(itemView: View, private val context: Context) : RecyclerView.ViewHolder(itemView) {
+
+        lateinit var movieId: String
+
         private val title = itemView.findViewById(R.id.title) as TextView
         private val info1 = itemView.findViewById(R.id.info1) as TextView
         private val info2 = itemView.findViewById(R.id.info2) as TextView
@@ -45,6 +47,8 @@ class MovieRecyclerAdapter(options: FirestoreRecyclerOptions<Movie>) :
         private val firestoreRepository by lazy { FirestoreRepository(context.applicationContext as BaseApplication) }
 
         fun bind(movie: Movie) {
+            movieId = movie.id
+
             title.text = movie.name
             info1.text = movie.description1
             info2.text = movie.description2
@@ -85,3 +89,5 @@ class MovieRecyclerAdapter(options: FirestoreRecyclerOptions<Movie>) :
         }
     }
 }
+
+//https://github.com/firebase/FirebaseUI-Android/issues/1131

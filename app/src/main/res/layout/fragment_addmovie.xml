@@ -30,8 +30,10 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textCapCharacters"
                 android:hint="@string/movie_name"
-                android:text="@={viewModel.movieName}" />
+                android:text="@={viewModel.movieName}"
+                android:textAllCaps="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout

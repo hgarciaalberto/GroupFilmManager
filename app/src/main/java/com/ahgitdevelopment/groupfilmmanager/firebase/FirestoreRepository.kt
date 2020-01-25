@@ -21,12 +21,16 @@ class FirestoreRepository(application: BaseApplication) {
     /**
      *
      */
-    fun createDb(): String = db.collection(ROOT).document().id
+    fun createDb(): String {
+        return db.collection(ROOT).document().id
+    }
 
     /**
      *
      */
-    fun createUser() = db.collection(ROOT).document(databaseId).collection(USERS).document().id
+    fun createUser(): String {
+        return db.collection(ROOT).document(databaseId).collection(USERS).document().id
+    }
 
     /**
      *
@@ -43,8 +47,9 @@ class FirestoreRepository(application: BaseApplication) {
      * To know if a database has been created, at least one user has to exist (the creator)
      * due to movies could not be added.
      */
-    suspend fun existDatabaseId(databaseId: String): QuerySnapshot? =
-        db.collection(ROOT).document(databaseId).collection(USERS).get().await()
+    suspend fun existDatabaseId(databaseId: String): QuerySnapshot? {
+        return db.collection(ROOT).document(databaseId).collection(USERS).get().await()
+    }
 
     /**
      *
@@ -89,8 +94,12 @@ class FirestoreRepository(application: BaseApplication) {
     /**
      *
      */
-    suspend fun getAllMovies(): QuerySnapshot =
-        db.collection(ROOT).document(databaseId).collection(MOVIES).orderBy(USER_NAME).get().await()
+    suspend fun getAllMovies(): QuerySnapshot {
+        return db.collection(ROOT).document(databaseId).collection(MOVIES).orderBy(USER_NAME).get().await()
+    }
+
+    fun getAllMoviesRef() = db.collection(ROOT).document(databaseId).collection(MOVIES)
+
 
     /**
      * Get every movieId in which any user has click that want to watch that movie,
@@ -126,9 +135,11 @@ class FirestoreRepository(application: BaseApplication) {
     /**
      *
      */
-    suspend fun getAllUsersInMovie(movieId: String): QuerySnapshot =
-        db.collection(ROOT).document(databaseId).collection(MOVIES).document(movieId).collection(MOVIE_USERS_COLLECTION)
+    suspend fun getAllUsersInMovie(movieId: String): QuerySnapshot {
+        return db.collection(ROOT).document(databaseId).collection(MOVIES).document(movieId)
+            .collection(MOVIE_USERS_COLLECTION)
             .orderBy(USER_NAME).get().await()
+    }
 
     /**
      *
@@ -163,6 +174,18 @@ class FirestoreRepository(application: BaseApplication) {
         db.collection(ROOT).document(databaseId).collection(MOVIES).document(movieId)
             .collection(MOVIE_USERS_COLLECTION).document(user.id)
             .update(MOVIE_USERS_COLLECTION_WANTED, user.isWanted)
+    }
+
+    suspend fun removeMovie(movieId: String) {
+
+        //Remove movieUsers collection first
+        db.collection(ROOT).document(databaseId).collection(MOVIES).document(movieId).collection(MOVIE_USERS_COLLECTION)
+            .get().await().forEach {
+                it.reference.delete()
+            }
+
+        //Then remove document
+        db.collection(ROOT).document(databaseId).collection(MOVIES).document(movieId).delete().await()
     }
 
 

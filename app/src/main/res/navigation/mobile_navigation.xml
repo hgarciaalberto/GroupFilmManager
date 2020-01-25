@@ -10,6 +10,10 @@
         android:name="com.ahgitdevelopment.groupfilmmanager.ui.moviemanger.ui.movies.MoviesFragment"
         android:label="@string/title_movies"
         tools:layout="@layout/fragment_movies">
+        <argument
+            android:name="isFavourite"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_navigation_home_to_navigation_addMovie"
             app:destination="@id/navigation_addMovie"

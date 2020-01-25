@@ -9,6 +9,7 @@ import com.ahgitdevelopment.groupfilmmanager.common.SingleLiveEvent
 import com.ahgitdevelopment.groupfilmmanager.data.Movie
 import com.ahgitdevelopment.groupfilmmanager.firebase.FirestoreRepository
 import kotlinx.coroutines.launch
+import java.util.*
 
 class AddMovieViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -25,7 +26,7 @@ class AddMovieViewModel(application: Application) : AndroidViewModel(application
 
             if (!movieName.value.isNullOrBlank()) {
                 Movie().apply {
-                    this.name = movieName.value?.trim() ?: ""
+                    this.name = movieName.value?.trim()?.toUpperCase(Locale.getDefault()) ?: ""
                     this.description1 = movieDescription1.value?.trim() ?: ""
                     this.description2 = movieDescription2.value?.trim() ?: ""
                 }.run {
