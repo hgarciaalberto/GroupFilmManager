@@ -97,13 +97,12 @@ class FirestoreRepository(application: BaseApplication) {
     }
 
     /**
-     * Obtaine all movies and update UI using the listener
+     * Obtain all movies and update UI using the listener
      */
     fun getAllMovies(listener: EventListener<QuerySnapshot>) {
-        Log.w(TAG, "getAllMovies")
-        db.collection(ROOT).document(databaseId).collection(MOVIES).orderBy(USER_NAME).addSnapshotListener(listener)
+        db.collection(ROOT).document(databaseId).collection(MOVIES).orderBy(USER_NAME)
+            .addSnapshotListener(listener)
     }
-
 
     /**
      * Get every movie reference
@@ -112,10 +111,10 @@ class FirestoreRepository(application: BaseApplication) {
         return db.collection(ROOT).document(databaseId).collection(MOVIES)
     }
 
-
     /**
      * Get every movieId in which any user has click that want to watch that movie,
      * then retrieve all movies stored
+     * @param listener Listener to detect changes in movies
      */
     suspend fun getAllFavouritesMovies(listener: EventListener<QuerySnapshot>) {
 
@@ -184,9 +183,7 @@ class FirestoreRepository(application: BaseApplication) {
     fun setWatchedMovie(movieId: String, user: User) {
         db.collection(ROOT).document(databaseId).collection(MOVIES).document(movieId)
             .collection(MOVIE_USERS_COLLECTION).document(user.id)
-            .update(MOVIE_USERS_COLLECTION_WATCHED, user.isWatched).addOnCompleteListener {
-                Log.i(TAG, "Set watched: ${it.isSuccessful}")
-            }
+            .update(MOVIE_USERS_COLLECTION_WATCHED, user.isWatched)
     }
 
     /**

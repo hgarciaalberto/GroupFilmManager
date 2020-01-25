@@ -18,6 +18,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.launch
 
 class MoviesViewModel(application: Application) : AndroidViewModel(application), EventListener<QuerySnapshot> {
+
     private val TAG = "MoviesViewModel"
 
     private val firestoreRepository by lazy { FirestoreRepository(application as BaseApplication) }
@@ -34,7 +35,6 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application),
         _loading.value = View.GONE
     }
 
-
     fun getMovies(isFavouriteFragment: Boolean?) {
         Log.d(TAG, "valor del favourite fragment: ${isFavouriteFragment.toString()}")
         viewModelScope.launch {
@@ -49,10 +49,12 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application),
     fun searchFilter(searchText: String) {
 
         _loading.value = View.VISIBLE
+
         firestoreRepository.getAllMoviesRef().orderBy(MOVIE_NAME)
             .startAt(searchText)
             .endAt("${searchText}\uf8ff")
             .addSnapshotListener(this)
+
     }
 
     fun removeMovie(movieId: String) {
@@ -65,9 +67,10 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application),
 
     override fun onEvent(snapshot: QuerySnapshot?, exception: FirebaseFirestoreException?) {
 
-        Log.d(TAG, "Num of elements in the array: ${snapshot?.size()}")
-        updateMovies.value = snapshot?.toObjects(Movie::class.java)
+        if (snapshot?.metadata?.hasPendingWrites() == false) {
 
-        _loading.value = View.GONE
+            updateMovies.value = snapshot.toObjects(Movie::class.java)
+            _loading.value = View.GONE
+        }
     }
 }
