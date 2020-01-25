@@ -5,36 +5,47 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE
-import androidx.recyclerview.widget.ItemTouchHelper.RIGHT
+import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.ahgitdevelopment.groupfilmmanager.R
 import com.ahgitdevelopment.groupfilmmanager.data.Movie
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.ahgitdevelopment.groupfilmmanager.databinding.FragmentMoviesBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.android.synthetic.main.movie_list_item.view.*
 import java.util.*
 
 class MoviesFragment : Fragment() {
 
-    private val TAG = "MoiesFragment"
+    private val TAG = "MoviesFragment"
 
     private lateinit var moviesViewModel: MoviesViewModel
 
     private var mAdapter: MovieRecyclerAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
+
+        val fragmentBinding: FragmentMoviesBinding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_movies, container, false
+        )
+
         moviesViewModel = ViewModelProviders.of(this).get(MoviesViewModel::class.java)
-        return inflater.inflate(R.layout.fragment_movies, container, false)
+        fragmentBinding.apply {
+            lifecycleOwner = activity
+            viewModel = moviesViewModel
+        }
+
+        moviesViewModel.getMovies(arguments?.getBoolean(IS_FAVOURITE_FRAGMENT))
+
+        return fragmentBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,32 +59,19 @@ class MoviesFragment : Fragment() {
         view.findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
             findNavController().navigate(R.id.navigation_addMovie)
         }
-
-        moviesViewModel.getMovies(arguments?.getBoolean(IS_FAVOURITE_FRAGMENT))
     }
 
     override fun onStart() {
         super.onStart()
-        mAdapter?.startListening()
 
-        moviesViewModel.updateMovies.observe(this, androidx.lifecycle.Observer { query ->
-
-            try {
-                if (query != null) {
-                    setRecyclerView(query)
-                } else {
-                    mAdapter?.notifyDataSetChanged()
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Known issue deleting first element", e)
+        moviesViewModel.updateMovies.observe(this, Observer { movies ->
+            movies?.let {
+                setRecyclerView(it)
+                mAdapter?.notifyDataSetChanged()
             }
         })
     }
 
-    override fun onStop() {
-        super.onStop()
-        mAdapter?.stopListening()
-    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
@@ -111,14 +109,11 @@ class MoviesFragment : Fragment() {
         moviesViewModel.searchFilter(searchText.toUpperCase(Locale.getDefault()).trim())
 
 
-    private fun setRecyclerView(query: Query) {
-        val options = FirestoreRecyclerOptions.Builder<Movie>()
-            .setLifecycleOwner(activity)
-            .setQuery(query, Movie::class.java)
-            .build()
+    private fun setRecyclerView(movies: List<Movie>) {
 
-        mAdapter = MovieRecyclerAdapter(options).apply {
-            startListening()
+        Log.w(TAG, "RECYCLER DONE!!!!!")
+
+        mAdapter = MovieRecyclerAdapter(movies).apply {
             setHasStableIds(true)
         }
 
@@ -133,22 +128,29 @@ class MoviesFragment : Fragment() {
 
     private val itemTouchHelper = object : ItemTouchHelper.SimpleCallback(0, RIGHT) {
 
+        private var viewHolderAux: RecyclerView.ViewHolder? = null
+
         override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
             super.onSelectedChanged(viewHolder, actionState)
             when (actionState) {
-                ACTION_STATE_SWIPE -> viewHolder?.itemView?.deleteIcon?.visibility = View.VISIBLE
+                ACTION_STATE_SWIPE -> {
+                    viewHolderAux = viewHolder
+                    viewHolder?.itemView?.deleteIcon?.visibility = View.VISIBLE
+                }
+
+                ACTION_STATE_IDLE -> viewHolderAux?.itemView?.deleteIcon?.visibility = View.GONE
             }
         }
 
-//        override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+        override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
 //            val dragFlags = UP or DOWN
-//            val swipeFlags = /*LEFT or*/ RIGHT
-//            return Callback.makeMovementFlags(0, swipeFlags)
-//        }
+            val swipeFlags = /*LEFT or*/ RIGHT
+            return ItemTouchHelper.Callback.makeMovementFlags(0, swipeFlags)
+        }
 
         override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
             target: RecyclerView.ViewHolder): Boolean {
-            return false
+            return true
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -157,7 +159,6 @@ class MoviesFragment : Fragment() {
                 RIGHT -> {
                     (viewHolder as MovieRecyclerAdapter.ViewHolder).movieId.let { movieId ->
                         moviesViewModel.removeMovie(movieId)
-                        mAdapter?.notifyDataSetChanged()
                     }
                 }
             }

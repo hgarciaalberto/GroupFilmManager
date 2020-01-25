@@ -4,6 +4,7 @@ import android.util.Log
 import com.ahgitdevelopment.groupfilmmanager.base.BaseApplication
 import com.ahgitdevelopment.groupfilmmanager.data.Movie
 import com.ahgitdevelopment.groupfilmmanager.data.User
+import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.tasks.await
@@ -19,21 +20,21 @@ class FirestoreRepository(application: BaseApplication) {
     private val userName = application.prefs.getUserName()
 
     /**
-     *
+     * Create databaseId
      */
     fun createDb(): String {
         return db.collection(ROOT).document().id
     }
 
     /**
-     *
+     * Create userId
      */
     fun createUser(): String {
         return db.collection(ROOT).document(databaseId).collection(USERS).document().id
     }
 
     /**
-     *
+     * Save user into database. It doesn't update any UI info so it can be executed using Coroutines
      */
     suspend fun saveUserIntoDatabase() {
         val user = hashMapOf(
@@ -52,7 +53,7 @@ class FirestoreRepository(application: BaseApplication) {
     }
 
     /**
-     *
+     * Save movie into database. UI will be updated after returning to MoviesFragment
      */
     suspend fun saveMovie(movie: Movie) {
 
@@ -62,6 +63,9 @@ class FirestoreRepository(application: BaseApplication) {
         addAllUsersIntoDatabase(movie.id)
     }
 
+    /**
+     * Add all users into movie. This does not update UI so it can be executed using Coroutines
+     */
     private suspend fun addAllUsersIntoDatabase(movieId: String) {
         // Get users
         db.collection(ROOT).document(databaseId).collection(USERS).get().await().forEach {
@@ -74,7 +78,7 @@ class FirestoreRepository(application: BaseApplication) {
     }
 
     /**
-     *
+     * Add user into movie. This does not update UI so it can be executed using Coroutines
      */
     suspend fun updateMoviesWithNewUser() {
 
@@ -92,12 +96,17 @@ class FirestoreRepository(application: BaseApplication) {
     }
 
     /**
-     *
+     * Obtaine all movies and update UI using the listener
      */
-    suspend fun getAllMovies(): QuerySnapshot {
-        return db.collection(ROOT).document(databaseId).collection(MOVIES).orderBy(USER_NAME).get().await()
+    fun getAllMovies(listener: EventListener<QuerySnapshot>) {
+        Log.w(TAG, "getAllMovies")
+        db.collection(ROOT).document(databaseId).collection(MOVIES).orderBy(USER_NAME).addSnapshotListener(listener)
     }
 
+
+    /**
+     * Get every movie reference
+     */
     fun getAllMoviesRef() = db.collection(ROOT).document(databaseId).collection(MOVIES)
 
 
@@ -105,7 +114,9 @@ class FirestoreRepository(application: BaseApplication) {
      * Get every movieId in which any user has click that want to watch that movie,
      * then retrieve all movies stored
      */
-    suspend fun getAllFavouritesMovies(): QuerySnapshot? {
+    suspend fun getAllFavouritesMovies(listener: EventListener<QuerySnapshot>) {
+
+        Log.d(TAG, "getAllFavouritesMovies")
 
         val wantedMovieIds = HashSet<String>()
 
@@ -126,14 +137,21 @@ class FirestoreRepository(application: BaseApplication) {
                 }
             }
 
-        return if (wantedMovieIds.toList().isNotEmpty()) {
+
+        Log.d(TAG, "getAllFavouritesMovies. List empty: ${wantedMovieIds.toList().isNotEmpty()}")
+
+        if (wantedMovieIds.toList().isNotEmpty()) {
             db.collection(ROOT).document(databaseId).collection(MOVIES)
-                .whereIn(MOVIE_ID, wantedMovieIds.toList().take(MAX_WHEREIN_ELEMENTS)).get().await()
-        } else null
+                .whereIn(MOVIE_ID, wantedMovieIds.toList().take(MAX_WHEREIN_ELEMENTS)).addSnapshotListener(listener)
+        } else {
+            // Workaround: I need and empty Movie list because no movie match the condition to be "wanted" checkbox checked.
+            // Then I return "movies" in a different node, so I obtain a 0 movie list. It's not the best solution
+            db.collection(ROOT).addSnapshotListener(listener)
+        }
     }
 
     /**
-     *
+     * Get all users associated with a movie
      */
     suspend fun getAllUsersInMovie(movieId: String): QuerySnapshot {
         return db.collection(ROOT).document(databaseId).collection(MOVIES).document(movieId)
@@ -142,8 +160,9 @@ class FirestoreRepository(application: BaseApplication) {
     }
 
     /**
-     *
+     *Provide databaseId providing database name
      */
+    @Suppress("unused")
     suspend fun getDatabaseIdByName(movieName: String): String {
         var movieId = ""
         db.collection(ROOT).document(databaseId).collection(MOVIES).whereEqualTo(MOVIE_NAME, movieName).get()
@@ -157,7 +176,7 @@ class FirestoreRepository(application: BaseApplication) {
     }
 
     /**
-     *
+     * Update database info when clicking checkbox for movies that has been watched
      */
     fun setWatchedMovie(movieId: String, user: User) {
         db.collection(ROOT).document(databaseId).collection(MOVIES).document(movieId)
@@ -168,7 +187,7 @@ class FirestoreRepository(application: BaseApplication) {
     }
 
     /**
-     *
+     * Update database info when clicking checkbox for movies that want to be watched
      */
     fun setWantedMovie(movieId: String, user: User) {
         db.collection(ROOT).document(databaseId).collection(MOVIES).document(movieId)
@@ -176,6 +195,9 @@ class FirestoreRepository(application: BaseApplication) {
             .update(MOVIE_USERS_COLLECTION_WANTED, user.isWanted)
     }
 
+    /**
+     * Remove movie form database and the users node
+     */
     suspend fun removeMovie(movieId: String) {
 
         //Remove movieUsers collection first

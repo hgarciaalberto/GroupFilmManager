@@ -9,7 +9,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import com.ahgitdevelopment.groupfilmmanager.R
 import com.ahgitdevelopment.groupfilmmanager.databinding.FragmentAddmovieBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -41,7 +40,10 @@ class AddMovieFragment : Fragment() {
 
         addMovieViewModel.isMovieSaved.observe(this, Observer {
             when (it) {
-                true -> findNavController().popBackStack()
+                true -> {
+                    fragmentManager?.popBackStackImmediate()
+//                    findNavController().navigate(R.id.navigation_movies)
+                }
                 false -> Toast.makeText(requireContext(), R.string.error_message_empty_value, Toast.LENGTH_LONG).show()
             }
         })
