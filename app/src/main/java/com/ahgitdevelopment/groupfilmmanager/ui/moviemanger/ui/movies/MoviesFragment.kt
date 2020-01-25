@@ -33,6 +33,8 @@ class MoviesFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
+        setHasOptionsMenu(true)
+
         val fragmentBinding: FragmentMoviesBinding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_movies, container, false
         )
@@ -72,7 +74,6 @@ class MoviesFragment : Fragment() {
         })
     }
 
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
         //Don't know why I cannot access search item by its Id or name...
@@ -92,8 +93,11 @@ class MoviesFragment : Fragment() {
                 }
             })
 
-
         return super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    fun searchFilter(searchText: String) {
+        moviesViewModel.searchFilter(searchText.toUpperCase(Locale.getDefault()).trim())
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -104,9 +108,6 @@ class MoviesFragment : Fragment() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-    fun searchFilter(searchText: String) =
-        moviesViewModel.searchFilter(searchText.toUpperCase(Locale.getDefault()).trim())
 
 
     private fun setRecyclerView(movies: List<Movie>) {

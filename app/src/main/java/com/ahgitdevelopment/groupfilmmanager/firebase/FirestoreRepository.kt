@@ -4,6 +4,7 @@ import android.util.Log
 import com.ahgitdevelopment.groupfilmmanager.base.BaseApplication
 import com.ahgitdevelopment.groupfilmmanager.data.Movie
 import com.ahgitdevelopment.groupfilmmanager.data.User
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
@@ -107,7 +108,9 @@ class FirestoreRepository(application: BaseApplication) {
     /**
      * Get every movie reference
      */
-    fun getAllMoviesRef() = db.collection(ROOT).document(databaseId).collection(MOVIES)
+    fun getAllMoviesRef(): CollectionReference {
+        return db.collection(ROOT).document(databaseId).collection(MOVIES)
+    }
 
 
     /**

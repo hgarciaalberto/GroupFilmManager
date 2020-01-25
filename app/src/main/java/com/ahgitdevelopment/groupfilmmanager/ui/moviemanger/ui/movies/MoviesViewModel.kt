@@ -16,7 +16,6 @@ import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class MoviesViewModel(application: Application) : AndroidViewModel(application), EventListener<QuerySnapshot> {
     private val TAG = "MoviesViewModel"
@@ -49,16 +48,11 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application),
 
     fun searchFilter(searchText: String) {
 
-
-        //FIXME
-        viewModelScope.launch {
-            _loading.value = View.VISIBLE
-            firestoreRepository.getAllMoviesRef().orderBy(MOVIE_NAME)
-                .startAt(searchText).endAt("${searchText}\uf8ff").get().await()
-                .let {
-                    updateMovies.value = it.toObjects(Movie::class.java)
-                }
-        }
+        _loading.value = View.VISIBLE
+        firestoreRepository.getAllMoviesRef().orderBy(MOVIE_NAME)
+            .startAt(searchText)
+            .endAt("${searchText}\uf8ff")
+            .addSnapshotListener(this)
     }
 
     fun removeMovie(movieId: String) {
@@ -70,10 +64,6 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     override fun onEvent(snapshot: QuerySnapshot?, exception: FirebaseFirestoreException?) {
-//        if (exception != null) {
-//            Log.e(TAG, "Firestore listener fail", exception)
-//            updateMovies.value = arrayListOf()
-//        }
 
         Log.d(TAG, "Num of elements in the array: ${snapshot?.size()}")
         updateMovies.value = snapshot?.toObjects(Movie::class.java)
