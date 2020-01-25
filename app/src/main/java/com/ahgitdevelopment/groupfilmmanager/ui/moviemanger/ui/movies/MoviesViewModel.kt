@@ -37,8 +37,9 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application),
 
     fun getMovies(isFavouriteFragment: Boolean?) {
         Log.d(TAG, "valor del favourite fragment: ${isFavouriteFragment.toString()}")
+        _loading.value = View.VISIBLE
+
         viewModelScope.launch {
-            _loading.value = View.VISIBLE
             when (isFavouriteFragment) {
                 true -> firestoreRepository.getAllFavouritesMovies(this@MoviesViewModel)
                 false -> firestoreRepository.getAllMovies(this@MoviesViewModel)
@@ -66,6 +67,8 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application),
     }
 
     override fun onEvent(snapshot: QuerySnapshot?, exception: FirebaseFirestoreException?) {
+
+        Log.d(TAG, "pending changes: ${snapshot?.metadata?.hasPendingWrites()}")
 
         if (snapshot?.metadata?.hasPendingWrites() == false) {
 

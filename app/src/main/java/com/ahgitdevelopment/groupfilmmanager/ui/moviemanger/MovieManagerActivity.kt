@@ -12,6 +12,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.ahgitdevelopment.groupfilmmanager.R
 import com.ahgitdevelopment.groupfilmmanager.base.BaseActivity
 import com.ahgitdevelopment.groupfilmmanager.base.BaseApplication
+import com.ahgitdevelopment.groupfilmmanager.ui.import.ImportMovies
 import com.ahgitdevelopment.groupfilmmanager.ui.main.MainActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -45,6 +46,9 @@ class MovieManagerActivity : BaseActivity() {
 
             R.id.menuImportFile -> {
                 Toast.makeText(this, "Import File", Toast.LENGTH_SHORT).show()
+                ImportMovies(this).run {
+                    import()
+                }
             }
 
             R.id.menuExportFile -> {

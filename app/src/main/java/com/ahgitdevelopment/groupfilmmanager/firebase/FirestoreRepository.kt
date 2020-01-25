@@ -100,7 +100,7 @@ class FirestoreRepository(application: BaseApplication) {
      * Obtain all movies and update UI using the listener
      */
     fun getAllMovies(listener: EventListener<QuerySnapshot>) {
-        db.collection(ROOT).document(databaseId).collection(MOVIES).orderBy(USER_NAME)
+        db.collection(ROOT).document(databaseId).collection(MOVIES).orderBy(MOVIE_NAME)
             .addSnapshotListener(listener)
     }
 
@@ -118,12 +118,12 @@ class FirestoreRepository(application: BaseApplication) {
      */
     suspend fun getAllFavouritesMovies(listener: EventListener<QuerySnapshot>) {
 
-        Log.d(TAG, "getAllFavouritesMovies")
+        Log.d(TAG, "getAllFavouritesMovies called")
 
         val wantedMovieIds = HashSet<String>()
 
         // Loop throw the movies
-        db.collection(ROOT).document(databaseId).collection(MOVIES).orderBy(USER_NAME).get().await()
+        db.collection(ROOT).document(databaseId).collection(MOVIES).orderBy(MOVIE_NAME).get().await()
             .forEach { movieSnapshot ->
 
                 val movieId = movieSnapshot.id
@@ -143,7 +143,7 @@ class FirestoreRepository(application: BaseApplication) {
         Log.d(TAG, "getAllFavouritesMovies. List empty: ${wantedMovieIds.toList().isNotEmpty()}")
 
         if (wantedMovieIds.toList().isNotEmpty()) {
-            db.collection(ROOT).document(databaseId).collection(MOVIES)
+            db.collection(ROOT).document(databaseId).collection(MOVIES).orderBy(MOVIE_NAME)
                 .whereIn(MOVIE_ID, wantedMovieIds.toList().take(MAX_WHEREIN_ELEMENTS)).addSnapshotListener(listener)
         } else {
             // Workaround: I need and empty Movie list because no movie match the condition to be "wanted" checkbox checked.
